@@ -1,0 +1,14 @@
+{
+  "name": "clara-health-platform",
+  "version": "1.0.0",
+  "description": "AI-Powered Patient Medical Report Understanding Platform (MediExplain / Clara Health)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": ["healthcare", "explainable-ai", "ocr", "medical-companion"],
+  "author": "Clara Health Engineering",
+  "license": "Apache-2.0"
+}
+

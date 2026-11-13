@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clara Health — AI Medical Companion Dashboard</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    .font-brand { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+    .glass-panel {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(12px);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 4px;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.4; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .voice-pulse {
+      animation: pulse-ring 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased m-0 p-0 flex h-screen overflow-hidden">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="w-64 border-r border-[var(--card-border)] bg-[var(--card)] flex flex-col justify-between shrink-0 hidden md:flex">
+    <!-- Brand Header -->
+    <div>
+      <div class="h-16 flex items-center px-5 border-b border-[var(--card-border)] gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-teal-600 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-teal-500/20">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            <path d="M12 9v4"/>
+            <path d="M10 11h4"/>
+          </svg>
+        </div>
+        <div>
+          <span class="font-brand font-bold text-base tracking-tight flex items-center gap-1.5">
+            Clara Health
+            <span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20">AI</span>
+          </span>
+          <p class="text-[10px] text-[var(--muted-foreground)]">Smart Patient Companion</p>
+        </div>
+      </div>
+
+      <!-- Patient Profile Pill -->
+      <div class="p-4 mx-3 my-3 rounded-xl bg-[var(--background)] border border-[var(--card-border)] flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-teal-500/20 text-teal-300 font-bold flex items-center justify-center text-sm border border-teal-500/30">
+          RK
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold text-xs truncate">Rajesh Kumar</div>
+          <div class="text-[10px] text-[var(--muted-foreground)] truncate">Age 58 • Type 2 Care</div>
+        </div>
+        <span class="w-2 h-2 rounded-full bg-emerald-500" title="Profile Active"></span>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="px-3 space-y-1 text-xs font-medium">
+        <button onclick="navigateTab('overview')" id="nav-overview" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-teal-600 text-white font-semibold transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Overview & Insights
+        </button>
+
+        <button onclick="navigateTab('scanner')" id="nav-scanner" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] transition">
+          <div class="flex items-center gap-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            <span>Scan Report</span>
+          </div>
+          <span class="text-[9px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded font-mono">Multimodal</span>
+        </button>
+
+        <button onclick="navigateTab('ask-ai')" id="nav-ask-ai" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] transition">
+          <div class="flex items-center gap-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span>Ask Your Report</span>
+          </div>
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        </button>
+
+        <button onclick="navigateTab('trends')" id="nav-trends" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+          Health Trends
+        </button>
+
+        <button onclick="navigateTab('doctor-prep')" id="nav-doctor-prep" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] transition">
+          <div class="flex items-center gap-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            <span>Doctor Visit Prep</span>
+          </div>
+          <span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-mono">3 Qs</span>
+        </button>
+
+        <button onclick="navigateTab('vault')" id="nav-vault" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          Medical Vault
+        </button>
+
+        <button onclick="navigateTab('education')" id="nav-education" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--background)] transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          Health Education
+        </button>
+      </nav>
+    </div>
+
+    <!-- Bottom Voice Trigger Pill -->
+    <div class="p-4 border-t border-[var(--card-border)]">
+      <div class="p-3 rounded-xl bg-gradient-to-r from-teal-950/60 to-emerald-950/60 border border-teal-500/30 text-xs">
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-500"></span>
+          </span>
+          <span class="font-bold text-teal-300">Voice Assistant Ready</span>
+        </div>
+        <p class="text-[11px] text-[var(--muted-foreground)] mb-2.5">Tap to speak in Hindi, Bengali, or English.</p>
+        <button onclick="startVoiceModal()" class="w-full py-2 px-3 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-medium text-xs flex items-center justify-center gap-2 shadow-sm transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+          Start Voice Consult
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN VIEWPORT -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+    <!-- Top App Bar -->
+    <header class="h-16 border-b border-[var(--card-border)] bg-[var(--card)] px-4 md:px-6 flex items-center justify-between gap-4 shrink-0">
+      <!-- Search bar -->
+      <div class="flex-1 max-w-md relative hidden sm:block">
+        <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" placeholder="Search lab tests, medicines, or doctor notes..." class="w-full pl-9 pr-4 py-1.5 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-xs focus:outline-none focus:border-teal-500 text-[var(--foreground)]" />
+      </div>
+
+      <!-- Action Utilities -->
+      <div class="flex items-center gap-2.5 ml-auto">
+        <!-- Language Selector -->
+        <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-xs">
+          <span class="text-[var(--muted-foreground)]">🌐</span>
+          <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-transparent text-xs text-[var(--foreground)] focus:outline-none cursor-pointer">
+            <option value="en">English (US)</option>
+            <option value="hi" selected>हिंदी (Hindi)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="ta">தமிழ் (Tamil)</option>
+            <option value="es">Español</option>
+          </select>
+        </div>
+
+        <!-- Quick Scan Button -->
+        <button onclick="triggerUploadModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-sm transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <span class="hidden sm:inline">Upload Report</span>
+        </button>
+
+        <!-- Notification Bell -->
+        <div class="relative">
+          <button class="p-2 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          </button>
+          <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500"></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY (SCROLLABLE) -->
+    <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 custom-scrollbar">
+
+      <!-- ==================== TAB 1: OVERVIEW DASHBOARD ==================== -->
+      <div id="section-overview" class="space-y-6">
+
+        <!-- Anti-Panic Status Banner (Feature 6: Smart Health Alert System) -->
+        <div class="rounded-2xl p-4 md:p-5 bg-gradient-to-r from-teal-950/40 via-[var(--card)] to-emerald-950/30 border border-teal-500/30 shadow-sm relative overflow-hidden">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center shrink-0 border border-teal-500/40 mt-0.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Overall Reassurance Status: Stable</span>
+                  <span class="text-[11px] text-[var(--muted-foreground)]">Report updated 3 hours ago</span>
+                </div>
+                <h2 class="text-base md:text-lg font-bold font-brand mt-1 text-[var(--foreground)]">
+                  Your Recent Blood Work Shows Calm & Predictable Progress
+                </h2>
+                <p class="text-xs text-[var(--muted-foreground)] mt-0.5 max-w-3xl leading-relaxed">
+                  Total Cholesterol is slightly elevated (210 mg/dL), but your protective HDL is optimal. <strong>No emergency detected.</strong> No need to modify medication without Dr. Sharma's advice.
+                </p>
+              </div>
+            </div>
+
+            <!-- 1-Tap Audio Readout (Feature 3: Voice Assistant) -->
+            <button onclick="playVernacularAudio()" id="btn-audio-summary" class="shrink-0 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs shadow-md transition">
+              <span id="audio-icon" class="text-base">🔊</span>
+              <div class="text-left">
+                <div class="font-bold leading-none" id="audio-label">Listen in Hindi</div>
+                <div class="text-[10px] opacity-80 mt-0.5" id="audio-duration">1m 45s audio summary</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Audio Progress Bar (hidden by default until clicked) -->
+          <div id="audio-progress-container" class="hidden mt-3 pt-3 border-t border-[var(--card-border)] flex items-center gap-3 text-xs">
+            <span class="text-emerald-400 font-mono text-[11px]" id="audio-timer">0:14 / 1:45</span>
+            <div class="flex-1 bg-[var(--background)] h-2 rounded-full overflow-hidden">
+              <div id="audio-bar" class="bg-emerald-500 h-full w-[22%] transition-all duration-300"></div>
+            </div>
+            <button onclick="pauseAudio()" class="text-xs font-semibold text-teal-300 hover:underline">Pause</button>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards (21st.dev Shadcn Style) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+          <!-- Card 1: Fasting Blood Sugar -->
+          <div class="glass-panel rounded-xl p-4 border border-[var(--card-border)]">
+            <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+              <span>Fasting Glucose</span>
+              <span class="text-emerald-400 font-medium">Optimal</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-xl md:text-2xl font-bold font-mono tracking-tight">104</span>
+              <span class="text-[10px] text-[var(--muted-foreground)] font-mono">mg/dL</span>
+            </div>
+            <div class="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-400">
+              <span>↓ 6 mg/dL</span>
+              <span class="text-[var(--muted-foreground)] text-[10px]">vs July (Target &lt; 110)</span>
+            </div>
+          </div>
+
+          <!-- Card 2: HbA1c -->
+          <div class="glass-panel rounded-xl p-4 border border-[var(--card-border)]">
+            <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+              <span>HbA1c (3-Mo Avg)</span>
+              <span class="text-amber-400 font-medium">Mild Variance</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-xl md:text-2xl font-bold font-mono tracking-tight">6.8%</span>
+              <span class="text-[10px] text-[var(--muted-foreground)] font-mono">Target &lt; 5.7%</span>
+            </div>
+            <div class="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-400">
+              <span>↓ from 7.2%</span>
+              <span class="text-[var(--muted-foreground)] text-[10px]">Improving trend</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Total Cholesterol -->
+          <div class="glass-panel rounded-xl p-4 border border-[var(--card-border)]">
+            <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+              <span>Total Cholesterol</span>
+              <span class="text-amber-400 font-medium">Borderline</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-xl md:text-2xl font-bold font-mono tracking-tight">210</span>
+              <span class="text-[10px] text-[var(--muted-foreground)] font-mono">mg/dL</span>
+            </div>
+            <div class="mt-2 flex items-center gap-1.5 text-[11px] text-amber-400">
+              <span>↑ 8 mg/dL</span>
+              <span class="text-[var(--muted-foreground)] text-[10px]">(Target &lt; 200)</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Blood Pressure -->
+          <div class="glass-panel rounded-xl p-4 border border-[var(--card-border)]">
+            <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+              <span>Blood Pressure</span>
+              <span class="text-emerald-400 font-medium">Healthy</span>
+            </div>
+            <div class="mt-2 flex items-baseline gap-2">
+              <span class="text-xl md:text-2xl font-bold font-mono tracking-tight">124/82</span>
+              <span class="text-[10px] text-[var(--muted-foreground)] font-mono">mmHg</span>
+            </div>
+            <div class="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-400">
+              <span>Steady</span>
+              <span class="text-[var(--muted-foreground)] text-[10px]">Medication active</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAIN SPLIT DUAL-VIEW: Original Lab vs Explainable Plain AI Translation -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+          <!-- Left Column: Grounded Lab Scanned Document (7 Cols) -->
+          <div class="lg:col-span-7 glass-panel rounded-2xl p-5 border border-[var(--card-border)] space-y-4">
+            <div class="flex items-center justify-between border-b border-[var(--card-border)] pb-3">
+              <div class="flex items-center gap-2.5">
+                <div class="p-2 rounded-lg bg-teal-500/10 text-teal-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm font-brand">Scanned Report: Apollo Diagnostics</h3>
+                  <div class="text-[10px] text-[var(--muted-foreground)]">Lab ID #AP-88492 • Collected: Oct 28, 2026 • Verified OCR</div>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                Grounding Active
+              </span>
+            </div>
+
+            <!-- Parsed Tabular Report Rows with Interactive Citation Highlight -->
+            <div class="overflow-x-auto text-xs">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="text-[11px] text-[var(--muted-foreground)] border-b border-[var(--card-border)]">
+                    <th class="py-2 px-2">Investigation</th>
+                    <th class="py-2 px-2">Observed Value</th>
+                    <th class="py-2 px-2">Standard Range</th>
+                    <th class="py-2 px-2 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--card-border)] text-xs font-mono">
+                  <tr class="hover:bg-[var(--card)]/80 transition cursor-pointer" onclick="selectBiomarker('glucose')">
+                    <td class="py-2.5 px-2 font-sans font-medium text-[var(--foreground)]">Fasting Blood Glucose</td>
+                    <td class="py-2.5 px-2 text-emerald-400 font-bold">104 mg/dL</td>
+                    <td class="py-2.5 px-2 text-[var(--muted-foreground)]">70 - 110 mg/dL</td>
+                    <td class="py-2.5 px-2 text-right font-sans"><span class="text-[10px] text-teal-400">Explain →</span></td>
+                  </tr>
+                  <tr class="hover:bg-[var(--card)]/80 transition cursor-pointer bg-amber-500/5" onclick="selectBiomarker('hba1c')">
+                    <td class="py-2.5 px-2 font-sans font-medium text-[var(--foreground)]">HbA1c (Glycated Hb)</td>
+                    <td class="py-2.5 px-2 text-amber-400 font-bold">6.8 %</td>
+                    <td class="py-2.5 px-2 text-[var(--muted-foreground)]">&lt; 5.7 % (Normal)</td>
+                    <td class="py-2.5 px-2 text-right font-sans"><span class="text-[10px] text-amber-400">Explain →</span></td>
+                  </tr>
+                  <tr class="hover:bg-[var(--card)]/80 transition cursor-pointer bg-amber-500/5" onclick="selectBiomarker('cholesterol')">
+                    <td class="py-2.5 px-2 font-sans font-medium text-[var(--foreground)]">Total Cholesterol</td>
+                    <td class="py-2.5 px-2 text-amber-400 font-bold">210 mg/dL</td>
+                    <td class="py-2.5 px-2 text-[var(--muted-foreground)]">&lt; 200 mg/dL</td>
+                    <td class="py-2.5 px-2 text-right font-sans"><span class="text-[10px] text-amber-400">Explain →</span></td>
+                  </tr>
+                  <tr class="hover:bg-[var(--card)]/80 transition cursor-pointer" onclick="selectBiomarker('creatinine')">
+                    <td class="py-2.5 px-2 font-sans font-medium text-[var(--foreground)]">Serum Creatinine</td>
+                    <td class="py-2.5 px-2 text-emerald-400 font-bold">0.9 mg/dL</td>
+                    <td class="py-2.5 px-2 text-[var(--muted-foreground)]">0.7 - 1.2 mg/dL</td>
+                    <td class="py-2.5 px-2 text-right font-sans"><span class="text-[10px] text-teal-400">Explain →</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Bounding Box Grounding Note -->
+            <div class="p-3 rounded-xl bg-[var(--background)] border border-[var(--card-border)] flex items-center justify-between text-[11px] text-[var(--muted-foreground)]">
+              <span class="flex items-center gap-1.5">
+                <span class="text-teal-400">📍</span> Grounded to Original Physical Page 1, Rows 12–18.
+              </span>
+              <button onclick="toggleOriginalScan()" class="text-teal-400 font-semibold hover:underline">View Original Scan JPEG</button>
+            </div>
+          </div>
+
+          <!-- Right Column: Simple AI Layman Translation (5 Cols) -->
+          <div class="lg:col-span-5 glass-panel rounded-2xl p-5 border border-[var(--card-border)] space-y-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b border-[var(--card-border)] pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-base">💡</span>
+                  <h3 class="font-bold text-sm font-brand">AI Plain Translation</h3>
+                </div>
+                <span id="active-lang-badge" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                  Hindi / हिंदी
+                </span>
+              </div>
+
+              <!-- Selected Biomarker Content Card -->
+              <div id="biomarker-card" class="mt-3 p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-xs text-[var(--foreground)]" id="bio-title">Total Cholesterol (210 mg/dL)</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300 font-medium" id="bio-tag">Mild / Borderline</span>
+                </div>
+                <p class="text-xs text-[var(--foreground)] leading-relaxed" id="bio-explanation">
+                  आपका कोलेस्ट्रॉल 210 है, जो सामान्य सीमा (200) से थोड़ा ही ऊपर है। यह चिंता का विषय नहीं है। आपके रक्त में अच्छा कोलेस्ट्रॉल (HDL) सही मात्रा में है जो आपके दिल की रक्षा करता है। सुबह की सैर जारी रखें।
+                </p>
+                <div class="text-[11px] text-[var(--muted-foreground)] pt-2 border-t border-[var(--card-border)] flex items-center justify-between">
+                  <span>Source verified: Apollo Biochem Sheet</span>
+                  <button onclick="playVernacularAudio()" class="text-emerald-400 font-medium hover:underline flex items-center gap-1">
+                    <span>🔊</span> Speak
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Doctor Visit Preparation Shortcut (Feature 8) -->
+            <div class="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-xs font-bold text-amber-300">
+                  <span>🩺</span> Next Clinic Visit Preparation
+                </div>
+                <span class="text-[10px] text-amber-400/80 font-mono">Dr. Sharma (Mon)</span>
+              </div>
+              <p class="text-[11px] text-[var(--muted-foreground)]">
+                Doctors only have 5 minutes. Show these 2 questions directly:
+              </p>
+              <div class="space-y-1.5 text-xs text-[var(--foreground)]">
+                <div class="flex items-start gap-2">
+                  <span class="text-teal-400 font-bold">•</span>
+                  <span>"My HbA1c improved to 6.8%. Do I maintain my Metformin dose?"</span>
+                </div>
+                <div class="flex items-start gap-2">
+                  <span class="text-teal-400 font-bold">•</span>
+                  <span>"Should we check cholesterol again in 3 or 6 months?"</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK FEATURES ROW: Ask AI Chatbot + Trends Quick View -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Chatbot Widget Preview (Feature 5: Ask Your Report) -->
+          <div class="glass-panel rounded-2xl p-5 border border-[var(--card-border)] space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-teal-600 text-white flex items-center justify-center font-bold text-xs">💬</div>
+                <h4 class="font-bold text-sm font-brand">Ask Your Report — AI Assistant</h4>
+              </div>
+              <span class="text-[10px] text-emerald-400 font-medium">Ready</span>
+            </div>
+
+            <!-- Chat dialogue sample -->
+            <div class="space-y-2 max-h-40 overflow-y-auto text-xs p-2.5 rounded-xl bg-[var(--background)] border border-[var(--card-border)] custom-scrollbar">
+              <div class="flex justify-end">
+                <div class="bg-teal-600 text-white px-3 py-1.5 rounded-xl rounded-tr-none text-xs max-w-[85%]">
+                  "Can I eat mangoes with my current blood sugar level?"
+                </div>
+              </div>
+              <div class="flex justify-start">
+                <div class="bg-[var(--card)] border border-[var(--card-border)] p-2.5 rounded-xl rounded-tl-none text-xs max-w-[90%] text-[var(--foreground)] space-y-1">
+                  <p>
+                    With your current HbA1c at 6.8%, small portions (half a small mango) eaten alongside nuts are fine. Avoid mango juice or shakes on an empty stomach.
+                  </p>
+                  <span class="text-[9px] text-[var(--muted-foreground)]">Based on your metabolic profile</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Input Box -->
+            <div class="flex items-center gap-2 pt-1">
+              <input type="text" id="chat-input" placeholder="Ask a question about your medication or food..." class="flex-1 bg-[var(--background)] border border-[var(--card-border)] rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-teal-500" />
+              <button onclick="handleQuickAsk()" class="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-medium text-xs">Ask</button>
+            </div>
+          </div>
+
+          <!-- Feature 4 & 9: Secure Vault & Trends Summary -->
+          <div class="glass-panel rounded-2xl p-5 border border-[var(--card-border)] space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-xs">🔒</div>
+                <h4 class="font-bold text-sm font-brand">Medical Record Vault & Family Sync</h4>
+              </div>
+              <button onclick="navigateTab('vault')" class="text-xs text-teal-400 font-medium hover:underline">View All (14 Docs) →</button>
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div class="p-2.5 rounded-xl bg-[var(--background)] border border-[var(--card-border)] flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-lg">📄</span>
+                  <div>
+                    <div class="font-semibold">Comprehensive Metabolic Panel</div>
+                    <div class="text-[10px] text-[var(--muted-foreground)]">Apollo Diagnostics • 28 Oct 2026</div>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 font-mono">Parsed</span>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-[var(--background)] border border-[var(--card-border)] flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <span class="text-lg">💊</span>
+                  <div>
+                    <div class="font-semibold">Discharge Summary & Prescription</div>
+                    <div class="text-[10px] text-[var(--muted-foreground)]">Max Healthcare • 14 Jul 2026</div>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-400 font-mono">Parsed</span>
+              </div>
+            </div>
+
+            <div class="pt-1 flex items-center justify-between text-xs text-[var(--muted-foreground)]">
+              <span>Encrypted with AES-256 Cloud Vault</span>
+              <button onclick="triggerUploadModal()" class="text-teal-400 font-semibold hover:underline">+ Add New Record</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== TAB 2: SCANNER (FEATURE 1) ==================== -->
+      <div id="section-scanner" class="hidden space-y-6">
+        <div class="glass-panel rounded-2xl p-6 border border-[var(--card-border)] text-center max-w-2xl mx-auto space-y-4">
+          <div class="w-16 h-16 rounded-2xl bg-teal-500/10 text-teal-400 flex items-center justify-center mx-auto text-2xl border border-teal-500/20">
+            📸
+          </div>
+          <div>
+            <h2 class="text-xl font-bold font-brand">AI Medical Report Scanner</h2>
+            <p class="text-xs text-[var(--muted-foreground)] mt-1">
+              Upload any phone photo, scan, PDF lab report, or handwritten discharge summary.
+            </p>
+          </div>
+
+          <div class="border-2 border-dashed border-[var(--card-border)] rounded-2xl p-8 hover:border-teal-500 transition cursor-pointer bg-[var(--background)]" onclick="simulateScanProcess()">
+            <svg class="w-10 h-10 text-[var(--muted-foreground)] mx-auto mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <div class="font-semibold text-xs">Drag & Drop or Tap to Browse Files</div>
+            <div class="text-[10px] text-[var(--muted-foreground)] mt-1">Supports JPEG, PNG, PDF up to 25MB • Multilingual OCR</div>
+            <button class="mt-4 px-4 py-2 bg-teal-600 text-white rounded-xl text-xs font-semibold shadow hover:bg-teal-500">
+              Select Report File
+            </button>
+          </div>
+
+          <!-- Scanner status pipeline -->
+          <div id="scan-progress" class="hidden text-left p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] text-xs space-y-2">
+            <div class="flex items-center justify-between font-semibold">
+              <span class="text-teal-400" id="scan-status-text">Scanning & extracting text with Vision AI...</span>
+              <span class="font-mono text-[10px]" id="scan-percent">78%</span>
+            </div>
+            <div class="w-full bg-[var(--card)] h-2 rounded-full overflow-hidden">
+              <div id="scan-bar" class="bg-teal-500 h-full w-[78%] transition-all duration-300"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB 3: DOCTOR VISIT PREP (FEATURE 8) ==================== -->
+      <div id="section-doctor-prep" class="hidden space-y-6">
+        <div class="glass-panel rounded-2xl p-6 border border-[var(--card-border)] space-y-4 max-w-3xl mx-auto">
+          <div class="flex items-center justify-between border-b border-[var(--card-border)] pb-4">
+            <div>
+              <div class="text-xs uppercase tracking-wider font-bold text-amber-400">Feature 8 • Clinical Optimization</div>
+              <h2 class="text-xl font-bold font-brand mt-0.5">5-Minute Doctor Consultation Sheet</h2>
+              <p class="text-xs text-[var(--muted-foreground)] mt-0.5">Print or open this on your phone when sitting with your physician.</p>
+            </div>
+            <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-[var(--background)] border border-[var(--card-border)] text-xs font-semibold hover:border-teal-500 transition">
+              🖨️ Print Sheet
+            </button>
+          </div>
+
+          <div class="space-y-3">
+            <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-xs">1</span>
+                <span class="font-bold text-xs">Metformin Dosage & HbA1c Trend</span>
+              </div>
+              <p class="text-xs text-[var(--foreground)] pl-8">
+                "Doctor, my HbA1c improved from 7.2% to 6.8%. Is my current 500mg Metformin dose adequate, or should we keep it unchanged?"
+              </p>
+              <div class="text-[10px] text-[var(--muted-foreground)] pl-8">Clinical context: Patient has maintained 30 min daily walking.</div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-xs">2</span>
+                <span class="font-bold text-xs">Borderline Lipid Strategy</span>
+              </div>
+              <p class="text-xs text-[var(--foreground)] pl-8">
+                "My total cholesterol is 210 mg/dL. Do you recommend dietary adjustments first, or do I need a low-dose statin?"
+              </p>
+              <div class="text-[10px] text-[var(--muted-foreground)] pl-8">Clinical context: HDL is healthy (54 mg/dL); triglycerides normal.</div>
+            </div>
+
+            <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--card-border)] space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-xs">3</span>
+                <span class="font-bold text-xs">Next Follow-Up Timeline</span>
+              </div>
+              <p class="text-xs text-[var(--foreground)] pl-8">
+                "Should I repeat my kidney panel (Creatinine 0.9) and blood sugar in 3 months or 6 months?"
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- VOICE MODAL OVERLAY (Feature 3) -->
+  <div id="voice-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[var(--card)] border border-[var(--card-border)] rounded-3xl p-6 max-w-sm w-full text-center space-y-5 shadow-2xl">
+      <div class="flex justify-between items-center text-xs">
+        <span class="font-bold text-teal-400">Speech-to-Speech Assistant</span>
+        <button onclick="closeVoiceModal()" class="text-[var(--muted-foreground)] hover:text-white">✕</button>
+      </div>
+
+      <!-- Animated Voice Wave -->
+      <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
+        <div class="absolute inset-0 rounded-full bg-teal-500/20 voice-pulse"></div>
+        <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-teal-600 to-emerald-500 flex items-center justify-center text-white text-2xl shadow-lg">
+          🎙️
+        </div>
+      </div>
+
+      <div>
+        <h3 class="font-bold text-base font-brand">Listening in Hindi...</h3>
+        <p class="text-xs text-[var(--muted-foreground)] mt-1">"आप अपनी रिपोर्ट के बारे में कुछ भी पूछ सकते हैं।"</p>
+      </div>
+
+      <div class="p-3 rounded-xl bg-[var(--background)] border border-[var(--card-border)] text-xs font-mono text-[var(--muted-foreground)] text-left">
+        Detected: "क्या मेरी शुगर रिपोर्ट सुरक्षित है?"
+      </div>
+
+      <button onclick="closeVoiceModal()" class="w-full py-2.5 rounded-xl bg-teal-600 text-white font-semibold text-xs">
+        Stop Speaking
+      </button>
+    </div>
+  </div>
+
+  <!-- SCRIPT FOR DYNAMIC FUNCTIONALITY -->
+  <script>
+    const translations = {
+      en: {
+        cholesterol: "Your total cholesterol is 210 mg/dL, which is only slightly above the standard benchmark of 200. This is not an emergency. Your protective HDL cholesterol is healthy, which protects your heart.",
+        glucose: "Your fasting glucose is 104 mg/dL. This is completely optimal and within normal parameters.",
+        hba1c: "Your 3-month sugar average is 6.8%. It has improved from 7.2% last quarter. Your daily walks are yielding results.",
+        creatinine: "Your kidney filtration (Creatinine 0.9) is healthy and normal.",
+        listenBtn: "Listen in English",
+        badge: "English (US)"
+      },
+      hi: {
+        cholesterol: "आपका कोलेस्ट्रॉल 210 है, जो सामान्य सीमा (200) से थोड़ा ही ऊपर है। यह चिंता का विषय नहीं है। आपके रक्त में अच्छा कोलेस्ट्रॉल (HDL) सही मात्रा में है जो दिल की रक्षा करता है।",
+        glucose: "आपका उपवास रक्त शर्करा (Fasting Glucose) 104 mg/dL है, जो पूरी तरह सामान्य और सुरक्षित है।",
+        hba1c: "आपका 3 महीने का औसत (HbA1c) 6.8% है। यह पिछले महीने के 7.2% से सुधरा है। सुबह की सैर जारी रखें।",
+        creatinine: "आपकी किडनी की जांच (क्रिएटिनिन 0.9) बिल्कुल सामान्य और स्वस्थ है।",
+        listenBtn: "हिंदी में सुनें",
+        badge: "हिंदी / Hindi"
+      },
+      es: {
+        cholesterol: "Su colesterol total es de 210 mg/dL, apenas por encima del límite de 200. No es una emergencia; su colesterol HDL protector está en un rango saludable.",
+        glucose: "Su glucosa en ayunas es de 104 mg/dL, dentro de los rangos óptimos normales.",
+        hba1c: "Su promedio de glucosa de 3 meses es de 6.8%, mejorando desde el 7.2% previo.",
+        creatinine: "Su función renal (Creatinina 0.9) es completamente saludable.",
+        listenBtn: "Escuchar en Español",
+        badge: "Español"
+      }
+    };
+
+    let currentLang = 'hi';
+    let currentBiomarker = 'cholesterol';
+    let audioInterval = null;
+
+    function changeLanguage(lang) {
+      currentLang = lang;
+      const dict = translations[lang] || translations['en'];
+      document.getElementById('bio-explanation').innerText = dict[currentBiomarker];
+      document.getElementById('audio-label').innerText = dict.listenBtn;
+      document.getElementById('active-lang-badge').innerText = dict.badge;
+    }
+
+    function selectBiomarker(bio) {
+      currentBiomarker = bio;
+      const dict = translations[currentLang] || translations['en'];
+      const titles = {
+        cholesterol: "Total Cholesterol (210 mg/dL)",
+        glucose: "Fasting Blood Glucose (104 mg/dL)",
+        hba1c: "HbA1c Glycated Hemoglobin (6.8%)",
+        creatinine: "Serum Creatinine (0.9 mg/dL)"
+      };
+      const tags = {
+        cholesterol: "Mild / Borderline",
+        glucose: "Optimal Range",
+        hba1c: "Improving Trend",
+        creatinine: "Healthy Range"
+      };
+
+      document.getElementById('bio-title').innerText = titles[bio];
+      document.getElementById('bio-tag').innerText = tags[bio];
+      document.getElementById('bio-explanation').innerText = dict[bio];
+    }
+
+    function playVernacularAudio() {
+      const prog = document.getElementById('audio-progress-container');
+      prog.classList.remove('hidden');
+      document.getElementById('audio-icon').innerText = '⏸️';
+
+      let seconds = 14;
+      if (audioInterval) clearInterval(audioInterval);
+      audioInterval = setInterval(() => {
+        seconds++;
+        if (seconds > 105) {
+          clearInterval(audioInterval);
+          document.getElementById('audio-icon').innerText = '🔊';
+          return;
+        }
+        const pct = Math.min(100, Math.round((seconds / 105) * 100));
+        document.getElementById('audio-bar').style.width = pct + '%';
+        const mins = Math.floor(seconds / 60);
+        const remSecs = seconds % 60;
+        document.getElementById('audio-timer').innerText = `${mins}:${remSecs < 10 ? '0' : ''}${remSecs} / 1:45`;
+      }, 1000);
+    }
+
+    function pauseAudio() {
+      if (audioInterval) clearInterval(audioInterval);
+      document.getElementById('audio-icon').innerText = '🔊';
+    }
+
+    function navigateTab(tab) {
+      const sections = ['overview', 'scanner', 'doctor-prep'];
+      sections.forEach(s => {
+        const el = document.getElementById('section-' + s);
+        if (el) {
+          if (s === tab) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        }
+      });
+
+      // Update sidebar nav buttons
+      const navIds = ['overview', 'scanner', 'doctor-prep'];
+      navIds.forEach(n => {
+        const btn = document.getElementById('nav-' + n);
+        if (btn) {
+          if (n === tab) {
+            btn.classList.add('bg-teal-600', 'text-white', 'font-semibold');
+            btn.classList.remove('text-[var(--muted-foreground)]');
+          } else {
+            btn.classList.remove('bg-teal-600', 'text-white', 'font-semibold');
+            btn.classList.add('text-[var(--muted-foreground)]');
+          }
+        }
+      });
+    }
+
+    function startVoiceModal() {
+      document.getElementById('voice-modal').classList.remove('hidden');
+    }
+
+    function closeVoiceModal() {
+      document.getElementById('voice-modal').classList.add('hidden');
+    }
+
+    function triggerUploadModal() {
+      navigateTab('scanner');
+    }
+
+    function simulateScanProcess() {
+      const prog = document.getElementById('scan-progress');
+      prog.classList.remove('hidden');
+      let pct = 10;
+      const interval = setInterval(() => {
+        pct += 15;
+        document.getElementById('scan-bar').style.width = pct + '%';
+        document.getElementById('scan-percent').innerText = pct + '%';
+        if (pct >= 100) {
+          clearInterval(interval);
+          document.getElementById('scan-status-text').innerText = 'Report Parsed Successfully! Redirecting to Overview...';
+          setTimeout(() => {
+            navigateTab('overview');
+            prog.classList.add('hidden');
+          }, 1000);
+        }
+      }, 300);
+    }
+
+    function toggleOriginalScan() {
+      alert("Opening high-resolution bounding-box view for Page 1 of Apollo Lab Report.");
+    }
+
+    function handleQuickAsk() {
+      const input = document.getElementById('chat-input');
+      if (!input.value.trim()) return;
+      alert(`AI Medical Companion is analyzing "${input.value}" against your uploaded metabolic panel...`);
+      input.value = '';
+    }
+  </script>
+</body>
+</html>
